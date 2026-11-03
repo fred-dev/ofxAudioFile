@@ -1,8 +1,8 @@
 #!/bin/bash
 
-directory=${PWD##*/}
-
-if [ "$directory" = "ofxAudioFile" ]
+# Run from the addon root (checked by looking for the addon source, so it works
+# whatever the folder is called).
+if [ -f "src/ofxAudioFile.h" ]
 then
 
     echo "ofxAudioFile libraries update"

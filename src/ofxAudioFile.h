@@ -1,7 +1,8 @@
-
 #ifndef OFXAUDIOFILE_H_DEFINED
 #define OFXAUDIOFILE_H_DEFINED
 
+#include <cstddef>
+#include <cstdint>
 #include <iostream>
 #include <string>
 
@@ -12,7 +13,7 @@ public:
     ofxAudioFile(const ofxAudioFile& other);
     ofxAudioFile& operator= (const ofxAudioFile& other);
     ~ofxAudioFile();
-    
+
     /*!
     @brief loads the audio data from a file
     @param[in] filePath absolute or relative path to audio file
@@ -21,30 +22,30 @@ public:
 
     /*!
     @brief unload the data from the buffer and free the allocated memory
-    */    
+    */
     void    free();
-    
+
     /*!
     @brief returns true if data has been loaded into the ofxAudioFile
-    */ 
+    */
     bool    loaded() const;
-    
+
     /*!
     @brief activate logging of file loading operations for this ofxAudioFile
     @param[in] verbose
-    */     
+    */
     void    setVerbose(bool verbose);
 
     /*!
     @brief returns the path of loaded file, or contains diagnostic strings if a file is not loaded
-    */  
+    */
     std::string path() const {
         return filePath;
     }
 
     /*!
     @brief returns a pointer to the buffer, use with caution! the internal buffer is initializated to nullptr
-    */  
+    */
     float * data(){
         return buffer;
     }
@@ -60,14 +61,14 @@ public:
 
     /*!
     @brief returns the sample rate of the sample
-    */      
+    */
     uint64_t samplerate() const {
         return sampleRate;
     }
-    
+
     /*!
     @brief returns the number of channels
-    */  
+    */
     unsigned int channels() const {
         return nchannels;
     }
@@ -84,14 +85,23 @@ private:
     void load_ogg(  std::string path );
     void load_mp3(  std::string path );
     void load_flac( std::string path );
-    
+
+    // Takes ownership of decoded interleaved float data. `release` is the
+    // function that frees it (each decoder allocates differently), so the
+    // decoder's buffer is used directly instead of being copied.
+    void adopt( float* data, void (*release)(float*), unsigned int channels,
+                unsigned int rate, uint64_t frames, const std::string& path );
+
+    void copyFrom( const ofxAudioFile& other );
+
     float* buffer;
-    
-    unsigned int    nchannels;   
+    void (*releaseBuffer)(float*);
+
+    unsigned int    nchannels;
     uint64_t        buffersize;
     uint64_t        slength;
     unsigned int    sampleRate;
-    std::string     filePath;   
+    std::string     filePath;
     bool            verbose;
 
 };

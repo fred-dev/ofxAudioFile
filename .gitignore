@@ -105,3 +105,5 @@ Desktop.ini
 *.log
 *.sql
 *.sqlite
+tests/test_runner
+tests/data/
